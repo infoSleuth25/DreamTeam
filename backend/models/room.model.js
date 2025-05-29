@@ -11,8 +11,7 @@ const roomSchema = new mongoose.Schema({
     },
     players :[
         {
-            type : mongoose.Schema.Types.ObjectId,
-            ref : 'User'
+            type : String
         }
     ],
     maxPlayers :{
