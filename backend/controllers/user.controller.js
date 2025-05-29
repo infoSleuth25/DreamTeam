@@ -2,6 +2,9 @@ const User = require('../models/user.model');
 const UserValidationSchema = require('../validators/user.validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const {blackListToken} = require('../models/blacklistToken.model');
+
+
 
 async function registerUser(req, res) {
     try {
@@ -64,7 +67,8 @@ async function loginUser(req,res){
             user: {
                 id: user._id,
                 email: user.email
-            }
+            },
+            token : token
         })
     }
     catch(error){
@@ -73,4 +77,17 @@ async function loginUser(req,res){
     }
 }
 
-module.exports = { registerUser, loginUser };
+async function getUserProfile(req,res){
+    res.status(200).json(req.user);
+}
+
+async function logoutUser(req,res){
+    const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+    await blackListToken.create({token});
+    res.clearCookie('token');
+    res.status(200).json({
+        msg : "Logged out"
+    })
+}
+
+module.exports = { registerUser, loginUser, getUserProfile, logoutUser };
